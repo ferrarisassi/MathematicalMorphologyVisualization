@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from graphics2D import *
 
-u = 50
+u = 15
 planoCartesiano(u)
 
 def DesenhaImagem(imagem):
@@ -153,6 +153,73 @@ def Erosao(imagem, EE, cinza = True):
                 novaImagem.append([x,y,cor])
     return novaImagem
 
+def E(imagem1, imagem2):
+    novaImagem = []
+    for i in imagem1:
+        x = i[0]
+        y = i[1]
+        cor = i[2]
+        index1 = GetIndexFromPointInImage(x,y,imagem1)
+        index2 = GetIndexFromPointInImage(x,y,imagem2)
+        if(index1!=-1 and index2!=-1):
+            cor = (imagem1[index1][2]+imagem2[index2][2])//2
+            novaImagem.append([x,y,cor])
+    return novaImagem
+
+def OU(imagem1, imagem2):
+    novaImagem = imagem2
+    for i in imagem1:
+        x = i[0]
+        y = i[1]
+        cor = i[2]
+        index1 = GetIndexFromPointInImage(x,y,imagem1)
+        index2 = GetIndexFromPointInImage(x,y,imagem2)
+        if(index1!=-1):
+            if(index2!=-1):
+                cor = (imagem1[index1][2]+imagem2[index2][2])//2
+                novaImagem.append([x,y,cor])
+            else:
+                cor = imagem1[index1][2]
+                novaImagem.append([x,y,cor])
+        elif(index2!=-1):
+            cor = imagem1[index2][2]
+            novaImagem.append([x,y,cor])
+    return novaImagem
+
+def Abertura(imagem, EE):
+    novaImagem = Erosao(imagem,EE)
+    novaImagem = Dilatacao(imagem,EE)
+    return novaImagem
+
+def Fechamento(imagem, EE):
+    novaImagem = Dilatacao(imagem,EE)
+    novaImagem = Erosao(imagem,EE)
+    return novaImagem
+
+def MenosBinario(imagem1, imagem2):
+    novaImagem = []
+    for i in imagem1:
+        x = i[0]
+        y = i[1]
+        cor = i[2]
+        index1 = GetIndexFromPointInImage(x,y,imagem1)
+        index2 = GetIndexFromPointInImage(x,y,imagem2)
+        if(index2==-1):
+            novaImagem.append([x,y,cor])
+    return novaImagem
+
+def Menos(imagem1, imagem2)
+    novaImagem = []
+    for i in imagem1:
+        x = i[0]
+        y = i[1]
+        index1 = GetIndexFromPointInImage(x,y,imagem1)
+        index2 = GetIndexFromPointInImage(x,y,imagem2)
+        cor = (imagem1[index1][2]-imagem2[index2][2])
+        if(cor>0)
+            novaImagem.append([x,y,cor])
+    return novaImagem
+
 def Translacao(imagem, xt, yt):
     novaImagem = []
     for i in imagem:
@@ -174,13 +241,13 @@ def Conj2Img(imagem):
     cv2.imwrite("imagemNova.png",newImage)
 
 imagem = [[1,-1,114],[2,-1,128],[3,-1,101],[2,-2,74]]
-#imagem = [[1,-1,0],[2,-1,0],[3,-1,0],[2,-2,0]]
+imagem = [[1,-1,0],[2,-1,0],[3,-1,0],[2,-2,0]]
 imagem2 = [[1,0,0],[1,-1,0],[1,-2,0],[1,-3,0],[2,-3,0],[3,-3,0]]
 Imagem = [[2,-1,3],[3,-1,40],[1,-4,30],[3,-4,55],[1,-8,120]]
 Imagem2 = [[3,0,66],[2,-1,3],[3,-1,40],[4,-1,7],[3,-2,150],[1,-4,30],[3,-4,55],[1,-7,70],[0,-8,95],[1,-8,120],[2,-8,12],[1,-9,40]]
 imagem3 = [[3,0,66],[2,-1,3],[3,-1,40],[4,-1,7],[3,-2,150]]
 EE = [[0,0,0],[1,0,0]]
-EE2 = [[1,0,10],[0,-1,10],[0,0,10],[-1,0,10],[0,1,10]]
+EE2 = [[1,0,0],[0,-1,0],[0,0,0],[-1,0,0],[0,1,0]]
 
 imagem4 = []
 for i in range(40):
@@ -191,7 +258,10 @@ for i in range(10):
     for j in range(40):
         EE4.append([i-5,j-20,0])
 
-#DesenhaImagem(imagem)
+nnimagem = MenosBinario(imagem4,Erosao(imagem4,EE2,False))
+#nnimagem = Erosao(imagem4,EE2,False)
+
+DesenhaImagem(nnimagem)
 
 #imagemExp = Expansao(imagem)
 #DesenhaImagem(imagemExp)
@@ -202,8 +272,8 @@ for i in range(10):
 #imagemDil = Dilatacao(imagem,EE2)
 #DesenhaImagem(imagemDil)
 
-imagemEro = Erosao(imagem4,EE4,False)
-DesenhaImagem(imagemEro)
+#imagemEro = Erosao(imagem4,EE4,False)
+#DesenhaImagem(imagemEro)
 
 #Conj2Img(Imagem2)
 
