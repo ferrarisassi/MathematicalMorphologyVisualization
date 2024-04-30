@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+import random
 from graphics2D import *
 
-u = 15
+u = 50
 planoCartesiano(u)
 
 def DesenhaImagem(imagem):
@@ -19,7 +20,7 @@ def DesenhaImagem(imagem):
         P = polygon([A,B,C,D])
         P.draw(color = rgb(cor,cor,cor))
         
-        myCanvas.create_text(x*u+center[0], -y*u+ center[1], text = t, fill=rgb(150,0,0))
+        if(u>15): myCanvas.create_text(x*u+center[0], -y*u+ center[1], text = t, fill=rgb(150,0,0))
 
 def GetIndexFromPointInImage(x,y,image):
     a = 0
@@ -208,7 +209,7 @@ def MenosBinario(imagem1, imagem2):
             novaImagem.append([x,y,cor])
     return novaImagem
 
-def Menos(imagem1, imagem2)
+def Menos(imagem1, imagem2):
     novaImagem = []
     for i in imagem1:
         x = i[0]
@@ -216,7 +217,7 @@ def Menos(imagem1, imagem2)
         index1 = GetIndexFromPointInImage(x,y,imagem1)
         index2 = GetIndexFromPointInImage(x,y,imagem2)
         cor = (imagem1[index1][2]-imagem2[index2][2])
-        if(cor>0)
+        if(cor>0):
             novaImagem.append([x,y,cor])
     return novaImagem
 
@@ -230,47 +231,61 @@ def Translacao(imagem, xt, yt):
     return novaImagem
 
 def Conj2Img(imagem):
-    h = 20
-    w = 20
-    newImage = np.zeros((h,w,3), np.uint8)
+    h = 60
+    w = 60
+    newImage = np.ones((h,w,3), np.uint8)*255
     for i in imagem:
         x = i[0]
         y = i[1]
         cor = i[2]
-        newImage[(w//2)+x][(h//2)+y] = [cor,cor,cor]
+        newImage[(h//2)+y][(w//2)+x] = [cor,cor,cor]
     cv2.imwrite("imagemNova.png",newImage)
 
-imagem = [[1,-1,114],[2,-1,128],[3,-1,101],[2,-2,74]]
-imagem = [[1,-1,0],[2,-1,0],[3,-1,0],[2,-2,0]]
-imagem2 = [[1,0,0],[1,-1,0],[1,-2,0],[1,-3,0],[2,-3,0],[3,-3,0]]
-Imagem = [[2,-1,3],[3,-1,40],[1,-4,30],[3,-4,55],[1,-8,120]]
-Imagem2 = [[3,0,66],[2,-1,3],[3,-1,40],[4,-1,7],[3,-2,150],[1,-4,30],[3,-4,55],[1,-7,70],[0,-8,95],[1,-8,120],[2,-8,12],[1,-9,40]]
-imagem3 = [[3,0,66],[2,-1,3],[3,-1,40],[4,-1,7],[3,-2,150]]
+def Img2Conj(imagem):
+    imagem = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY) 
+    h,w = imagem.shape
+    newImage = []
+    for i in range(len(imagem)):
+        for j in range(len(imagem[0])):
+            cor = imagem[i][j]
+            if cor>140: newImage.append([-(w//2)+j,(h//2)-i,imagem[i][j]])
+    return newImage
+
+
+
+i1 = [[1,-1,114],[2,-1,128],[3,-1,101],[2,-2,74]]
+i2 = [[1,-1,0],[2,-1,0],[3,-1,0],[2,-2,0]]
+i3 = [[1,0,0],[1,-1,0],[1,-2,0],[1,-3,0],[2,-3,0],[3,-3,0]]
+i4 = [[2,-1,3],[3,-1,40],[1,-4,30],[3,-4,55],[1,-8,120]]
+i5 = [[3,0,66],[2,-1,3],[3,-1,40],[4,-1,7],[3,-2,150],[1,-4,30],[3,-4,55],[1,-7,70],[0,-8,95],[1,-8,120],[2,-8,12],[1,-9,40]]
+i6 = [[3,0,66],[2,-1,3],[3,-1,40],[4,-1,7],[3,-2,150]]
 EE = [[0,0,0],[1,0,0]]
 EE2 = [[1,0,0],[0,-1,0],[0,0,0],[-1,0,0],[0,1,0]]
-
+EE3 = [[0,0,0],[0,-1,0],[1,-1,0]]
 imagem4 = []
 for i in range(40):
     for j in range(40):
-        imagem4.append([i-20,j-20,0])
+        imagem4.append([i-20,j-20,random.randint(0,255)])
 EE4 = []
 for i in range(10):
     for j in range(40):
         EE4.append([i-5,j-20,0])
 
-nnimagem = MenosBinario(imagem4,Erosao(imagem4,EE2,False))
-#nnimagem = Erosao(imagem4,EE2,False)
+img = OU(i2,i3)
+imagemEro = Erosao(img,EE3,False)
+DesenhaImagem(imagemEro)
 
-DesenhaImagem(nnimagem)
+#ima = Img2Conj(cv2.imread("mama.jpg"))
+#DesenhaImagem(ima)
 
-#imagemExp = Expansao(imagem)
+#imagemExp = Expansao(imagem4)
 #DesenhaImagem(imagemExp)
 
-#imagemEnc = Encolhimento(imagemExp)
+#imagemEnc = Encolhimento(ima)
 #DesenhaImagem(imagemEnc)
 
-#imagemDil = Dilatacao(imagem,EE2)
-#DesenhaImagem(imagemDil)
+#imagemDil = Dilatacao(imagem4,EE2)
+#DesenhaImagem(Menos(imagemDil,imagem4))
 
 #imagemEro = Erosao(imagem4,EE4,False)
 #DesenhaImagem(imagemEro)
